@@ -1,15 +1,13 @@
 #Importa bibliotecas necessárias
-import os  #Trabalha com caminhos e operações do sistema de arquivos
+
 from datetime import datetime  #Trabalha com datas e horários
 import speech_recognition as sr  #Reconhecimento de voz
 import smtplib  #Envia e-mails usando protocolo SMTP
 from email.message import EmailMessage  #Cria e gerencia mensagens de e-mail
-import uuid #Criar códigos únicos
 from fpdf import FPDF  # Biblioteca para gerar arquivos PDF
-from database import registrar_receita_pdf #função DB
-from database import gerar_id_unico #função DB
+from database import *
 
-# Configurações de conexão banco de dados
+# Configurações de conexão banco de dados - SP4
 config = {
     'host': 'localhost', #Local do host
     'user': 'root', #usuario do mysql
@@ -17,14 +15,15 @@ config = {
     'database': 'hospital_sabara' #nome do banco de dados no mysql
 }
 
-#Coleta dados do paciente
+#Coleta dados do paciente -
 def coletar_dados_pacientes(config):
     #Solicita ao usuário o nome do paciente
     nome = input("Digite o nome do paciente: ")
     #Solicita ao usuário o e-mail do paciente
     email = input("Digite o e-mail do paciente: ")
-    #Gera um ID para o paciente automaticamente
+    #Gera um ID para o paciente automaticamente - SP4
     paciente_id = gerar_id_unico(config)
+    cadastrar_paciente(paciente_id, nome, email, config) #Hipotético, pois o hospital ja possui um bd de pacientes
     #Exibe informações coletadas
     print(f"\n[INFO] Nome: {nome}")
     print(f"[INFO] E-mail: {email}")
@@ -48,8 +47,8 @@ def ouvir_medico():
         #Faz o reconhecimento se adaptar ao ruído ambiente (barulhos de fundo), ajudando a melhorar a qualidade da transcrição
         reconhecedor.adjust_for_ambient_noise(entrada_audio)
         print("[INFO] Pode falar a prescrição agora:")
-        #A variavel armazena, puxamos a variavel reconhecedor, capitura o áudio do microfone
-        audio = reconhecedor.listen(entrada_audio)
+        #A variavel armazena, puxamos a variavel reconhecedor, capitura o áudio do microfone DURANTE 45 SEGUNDOS
+        audio = reconhecedor.listen(entrada_audio, phrase_time_limit=45)
 
 
     try:
@@ -106,7 +105,6 @@ def preencher_receita_pdf(nome_paciente, receita_formatada):
 
 
     pdf.ln(20)  # Dá espaço depois da imagem, se precisar
-
 
 
 
@@ -171,7 +169,7 @@ Hospital Sabará""")
     # Cria uma conexão segura com o servidor do Gmail pela porta 465
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         # Faz login na conta do Gmail usando uma senha de aplicativo
-        smtp.login("gabriellycasilva@gmail.com", "xcup fldl dclb hbzo")
+        smtp.login("ferreirasvictorj@gmail.com", "cgpgagmsmbxscdpx")
 
 
         # Envia a mensagem com o anexo para o destinatário
@@ -192,16 +190,45 @@ transcricao = ouvir_medico()
 
 #Se conseguiu transcrever a prescrição
 if transcricao != "":
-    #Caminho do modelo de receita que será usado
+    print(f"\n[TRANSCRIÇÃO] Receita reconhecida:\n{transcricao}")
+    editar = input("Deseja editar a receita antes de gerar o PDF? (s/n): ")
+
+    if editar == 's':
+        tipo = input("Digite '1' para substituir por nova fala ou '2' para acrescentar algo: ")
+
+        if tipo == '1':
+            print("[INFO] Repita a nova prescrição:")
+            nova_transcricao = ouvir_medico()
+
+            if nova_transcricao != "":
+                transcricao = nova_transcricao
+            else:
+                print("[ERRO] Nada foi reconhecido. Usando receita original.")
+
+        elif tipo == '2':
+            complemento = input("Digite o que deseja acrescentar: ")
+            transcricao += f" {complemento}"
+
+        else:
+            print("Entrada inválida. A receita original será usada.")
+
+    elif editar != 'n':
+        print("A receita original será usada.")
+
+    # Caminho do modelo de receita que será usado
     caminho_modelo = "receita_medica.docx"
-    #Preenche a receita com os dados coletados
+
+    # Preenche a receita com os dados coletados
     caminho_receita = preencher_receita_pdf(nome_paciente, transcricao)
+
     # Salva o PDF no banco de dados
     mensagem_db = registrar_receita_pdf(paciente_id, caminho_receita, config)
-    #Envia o e-mail com a receita em anexo
+
+    # Envia o e-mail com a receita em anexo
     enviar_email(email_paciente, caminho_receita, nome_paciente)
+
 else:
     #Caso não tenha conseguido captar a prescrição, exibe mensagem de erro
-    print("[ERRO] Nenhuma prescrição foi detectada, receita não gerada.")
+    print("Nenhuma prescrição foi detectada, receita não gerada.")
 
-
+visualizar_receita(paciente_id, config)
