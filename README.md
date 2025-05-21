@@ -1,6 +1,6 @@
 # SP4-Python
 
-# 🏥 Receita Digital Automatizada – Hospital Sabará
+# Receita Digital Automatizada – Hospital Sabará
 
 Este projeto Python automatiza a criação e envio de receitas médicas digitais a partir da transcrição da voz do médico, integrando funcionalidades como:
 - Reconhecimento de voz com transcrição
@@ -8,7 +8,7 @@ Este projeto Python automatiza a criação e envio de receitas médicas digitais
 - Armazenamento em banco de dados MySQL
 - Envio automático por e-mail com anexo
 
-## ⚙️ Tecnologias utilizadas
+## Tecnologias utilizadas
 - Python 3.x
 - [speech_recognition](https://pypi.org/project/SpeechRecognition/)
 - [fpdf](https://pyfpdf.github.io/fpdf2/)
@@ -16,17 +16,17 @@ Este projeto Python automatiza a criação e envio de receitas médicas digitais
 - smtplib / email
 - MySQL 8.0+
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
-📦 projeto/
+projeto/
 ├── main.py                # Script principal que executa todo o fluxo
 ├── database.py            # Módulo com funções para banco de dados
 ├── logo_sabara.png        # Logotipo inserido na receita
 ├── assinatura_fake.png    # Imagem da assinatura digital
 ```
 
-## 🚀 Como executar
+## Como executar
 
 1. **Instale as dependências:**
 ```bash
@@ -71,12 +71,12 @@ config = {
 python main.py
 ```
 
-## 💡 Funcionalidades
-- 🎤 Captura da voz do médico
-- 📄 Geração automática de receita em PDF com logotipo e assinatura
-- 💾 Armazenamento do PDF no banco de dados (MySQL)
-- 📧 Envio da receita por e-mail para o paciente
+## Funcionalidades
+- Captura da voz do médico
+- Geração automática de receita em PDF com logotipo e assinatura
+- Armazenamento do PDF no banco de dados (MySQL)
+- Envio da receita por e-mail para o paciente
 
-## ⚠️ Observações
+## Observações
 - O envio de e-mail requer autenticação com **senha de app** (como no Gmail).
 - O microfone deve estar funcionando corretamente para a captura de voz.
