@@ -133,7 +133,7 @@ def enviar_email(destinatario, caminho_anexo, nome_paciente):
 
 
     # Define o remetente (quem está enviando o e-mail)
-    msg["From"] = "gabriellycasilva@gmail.com"
+    msg["From"] = "email_remetente"
 
 
     # Define o destinatário (o paciente que vai receber a receita)
@@ -169,7 +169,7 @@ Hospital Sabará""")
     # Cria uma conexão segura com o servidor do Gmail pela porta 465
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         # Faz login na conta do Gmail usando uma senha de aplicativo
-        smtp.login("ferreirasvictorj@gmail.com", "cgpgagmsmbxscdpx")
+        smtp.login("e-mail_medico", "senha_app_medico")
 
 
         # Envia a mensagem com o anexo para o destinatário
